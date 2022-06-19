@@ -1,1 +1,1 @@
-SUBDIRS = parser reader
+SUBDIRS = common parser reader

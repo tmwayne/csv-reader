@@ -1,6 +1,6 @@
-//
+// 
 // -----------------------------------------------------------------------------
-// main.c
+// include.h
 // -----------------------------------------------------------------------------
 //
 // Copyright (c) 2022 Tyler Wayne
@@ -18,32 +18,9 @@
 // limitations under the License.
 //
 
-#include <stdio.h>
-#include "parser.h"
-#include "lexer.h"
+#ifndef DATAFRAME_INCLUDE
+#define DATAFRAME_INCLUDE
 
-#include "dataframe.h"
+extern void hello();
 
-void 
-yyerror(YYLTYPE *yyllocp, struct data * data, yyscan_t unused, const char *msg)
-{
-  fprintf(stderr, "[%d:%d]: %s\n",
-    yyllocp->first_line, yyllocp->first_column, msg);
-}
-
-int 
-main(int argc, char **argv) 
-{
-  struct data *data;
-  data = calloc(1, sizeof(struct data));
-
-  yyscan_t scanner;
-  yylex_init(&scanner);
-
-  yyparse(data, scanner);
-  yylex_destroy(scanner);
-
-  printf("data has\n"
-    "nfields: %d\n"
-    "nlines:  %d\n", data->nfields, data->nlines);
-}
+#endif // DATAFRAME_INCLUDE

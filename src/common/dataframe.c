@@ -1,6 +1,6 @@
 //
 // -----------------------------------------------------------------------------
-// main.c
+// dataframe.c
 // -----------------------------------------------------------------------------
 //
 // Copyright (c) 2022 Tyler Wayne
@@ -19,31 +19,10 @@
 //
 
 #include <stdio.h>
-#include "parser.h"
-#include "lexer.h"
 
-#include "dataframe.h"
-
-void 
-yyerror(YYLTYPE *yyllocp, struct data * data, yyscan_t unused, const char *msg)
+void
+hello()
 {
-  fprintf(stderr, "[%d:%d]: %s\n",
-    yyllocp->first_line, yyllocp->first_column, msg);
+  printf("Hello, world!\n");
 }
 
-int 
-main(int argc, char **argv) 
-{
-  struct data *data;
-  data = calloc(1, sizeof(struct data));
-
-  yyscan_t scanner;
-  yylex_init(&scanner);
-
-  yyparse(data, scanner);
-  yylex_destroy(scanner);
-
-  printf("data has\n"
-    "nfields: %d\n"
-    "nlines:  %d\n", data->nfields, data->nlines);
-}

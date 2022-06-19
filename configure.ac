@@ -38,6 +38,7 @@ AC_CONFIG_FILES([
   Makefile
   include/Makefile
   src/Makefile
+  src/common/Makefile
   src/parser/Makefile
   src/reader/Makefile
   test/Makefile

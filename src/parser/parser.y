@@ -27,10 +27,10 @@
 #include "parser.h"
 // #include "lexer.h"
 
-int yylex(YYSTYPE *yylvalp, YYLTYPE *yyllocp, yyscan_t scanner);
-void yyerror(YYLTYPE *yyllocp, yyscan_t unused, const char *msg);
+int yylex(YYSTYPE *, YYLTYPE *, yyscan_t);
+void yyerror(YYLTYPE *, struct data *, yyscan_t, const char *);
 
-int num_fields;
+int nfields = 0;
 
 %}
 
@@ -40,10 +40,15 @@ int num_fields;
 
 %code requires {
   typedef void *yyscan_t;
+
+  struct data {
+    int nfields;
+    int nlines;
+  };
 }
 
+%parse-param{ struct data *data }
 %param { yyscan_t scanner }
-// %param {int *num_fields}
 
 %union {
   char *str;
@@ -61,10 +66,13 @@ input:
                         // check if we want to set a header row
                         // add record to headers if so, otherwise add to data
                         { printf("EOL\n"); 
-                          num_fields = 0;}
+                          data->nfields = nfields;
+                          data->nlines++;
+                          nfields = 0;}
 
   | input record EOL    { printf("EOL\n"); 
-                          num_fields = 0; }
+                          data->nlines++;
+                          nfields = 0; }
                         // check that field count is correct
                         // add record to outgoing data structure
                         // increase line count
@@ -75,19 +83,19 @@ input:
 
 record:
   field                 // *This is the very first field
-                        { printf("%d:|%s| ", num_fields, $1); }
+                        { printf("%d:|%s| ", nfields, $1); }
 
-  | record ',' field    { printf("%d:|%s| ", num_fields, $3); }
+  | record ',' field    { printf("%d:|%s| ", nfields, $3); }
   ;
 
 field:
   %empty                { $$ = "";
-                          num_fields++; }
+                          nfields++; }
                         // check if the value is a header
                         // add the record to the outgoing data structure
 
   | FIELD               { $$ = $1;
-                          num_fields++; }
+                          nfields++; }
                         // check if the value is a header
                         // add the record to the outgoing data structure
                         // increase the field count
