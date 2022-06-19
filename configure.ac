@@ -1,0 +1,48 @@
+#
+# ------------------------------------------------------------------------------
+# configure.ac
+# ------------------------------------------------------------------------------
+#
+# Tyler Wayne © 2021
+#
+
+AC_PREREQ([2.69])
+AC_INIT([csv-reader], [0.1], [tylerwayne3@gmail.com])
+AM_INIT_AUTOMAKE([subdir-objects])
+
+LT_PREREQ([2.2.])
+LT_INIT([dlopen])
+
+AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_SRCDIR([src/reader/reader.c])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_YACC
+AC_PROG_LEX([noyywrap])
+
+# Checks for libraries.
+# AC_SEARCH_LIBS([dlopen], [dl])
+
+# Checks for header files.
+AC_CHECK_HEADERS([])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_CHECK_FUNCS([])
+
+AC_CONFIG_FILES([
+  Makefile
+  include/Makefile
+  src/Makefile
+  src/parser/Makefile
+  src/reader/Makefile
+  test/Makefile
+  test/data/Makefile
+  test/unit/Makefile
+  test/integration/Makefile])
+
+AC_OUTPUT
