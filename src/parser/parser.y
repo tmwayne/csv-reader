@@ -26,12 +26,14 @@
 #include <string.h> // strncpy
 #include "parser.h"
 #include "dataframe.h"
+#include "errorcodes.h"
 // #include "lexer.h"
 
 int yylex(YYSTYPE *, YYLTYPE *, yyscan_t);
 void yyerror(YYLTYPE *, dataframe_T, yyscan_t, const char *);
 
 int nfields = 0;
+record_T record;
 
 %}
 
@@ -59,43 +61,29 @@ int nfields = 0;
 %%
 
 input:
-  record EOL            // *This is the very first record
-                        // check if we want to set a header row
-                        // add record to headers if so, otherwise add to data
-                        { printf("EOL\n"); 
-                          data->nfields = nfields;
-                          data->nrecords++;
-                          nfields = 0;}
+                        // TODO: check for a header flag
+  record EOL            { dataframeSetHeaders(data, record);
+                          record = NULL; }
 
-  | input record EOL    { printf("EOL\n"); 
-                          data->nrecords++;
-                          nfields = 0; }
-                        // check that field count is correct
-                        // add record to outgoing data structure
-                        // increase line count
-                        // reset field count
+                        // TODO: figure out the best way to handle errors
+  | input record EOL    { if(dataframePush(data, record) != DF_OK)
+                            return -1;
+                          record = NULL; }
 
   | input error         { yyerrok; }
   ;
 
 record:
-  field                 // *This is the very first field
-                        { printf("%d:|%s| ", nfields, $1); }
+  field                 { if (!record) record = recordNew();
+                          recordPush(record, strdup($1)); }
 
-  | record ',' field    { printf("%d:|%s| ", nfields, $3); }
+  | record ',' field    { recordPush(record, strdup($3)); }
   ;
 
 field:
-  %empty                { $$ = "";
-                          nfields++; }
-                        // check if the value is a header
-                        // add the record to the outgoing data structure
+  %empty                { $$ = ""; }
 
-  | FIELD               { $$ = $1;
-                          nfields++; }
-                        // check if the value is a header
-                        // add the record to the outgoing data structure
-                        // increase the field count
+  | FIELD               { $$ = $1; }
   ;
 
 %%
