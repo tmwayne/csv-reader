@@ -18,9 +18,29 @@
 // limitations under the License.
 //
 
-#ifndef DATAFRAME_INCLUDE
-#define DATAFRAME_INCLUDE
+#ifndef DATAFRAME_INCLUDED
+#define DATAFRAME_INCLUDED
 
-extern void hello();
+typedef char *field_T;
 
-#endif // DATAFRAME_INCLUDE
+typedef struct record {
+  int nfields;
+  int len;
+  field_T *fields;
+} *record_T;
+
+typedef struct dataframe {
+  int nrecords;
+  int len;
+  record_T headers;
+  // TODO: make this an array of arrays for increased storage efficiency
+  record_T *records;
+} *dataframe_T;
+
+extern record_T     recordNew();
+extern int          recordPush(record_T, const field_T);
+extern field_T      recordGet(record_T, const int);
+
+extern dataframe_T  dataframeNew();
+
+#endif // DATAFRAME_INCLUDED

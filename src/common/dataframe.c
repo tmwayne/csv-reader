@@ -19,10 +19,65 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h> // calloc, realloc
+#include "dataframe.h"
+#include "errorcodes.h"
 
-void
-hello()
+record_T
+recordNew()
 {
-  printf("Hello, world!\n");
+  record_T record;
+  record = calloc(1, sizeof(*record));
+  if (!record) return NULL;
+
+  record->len = 8;
+  record->fields = calloc(record->len, sizeof(field_T));
+  if (!record->fields) {
+    free(record);
+    return NULL;
+  }
+
+  return record;
 }
 
+int
+recordPush(record_T record, const field_T val)
+{
+  if (!record) return DF_INVALIDARG;
+
+  if (record->nfields >= record->len) {
+    record->len <<= 1;
+    field_T *fields = realloc(record->fields, record->len * sizeof(field_T));
+    if (!fields) return DF_ENOMEM;
+    else record->fields = fields;
+  }
+
+  record->fields[record->nfields++] = val;
+
+  return DF_OK;
+}
+
+field_T
+recordGet(record_T record, const int ind)
+{
+  if (!(record && ind < record->nfields)) return NULL;
+  return record->fields[ind];
+}
+
+dataframe_T
+dataframeNew()
+{
+  dataframe_T df;
+  df = calloc(1, sizeof(*df));
+  if (!df) return NULL;
+  
+  df->len = 1024;
+
+  df->records = calloc(df->len, sizeof(df->records));
+  if (!df->records) {
+    free(df);
+    return NULL;
+  }
+
+  return df;
+}

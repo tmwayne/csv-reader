@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include "parser.h"
 #include "lexer.h"
-
 #include "dataframe.h"
 
 void 
@@ -34,16 +33,23 @@ yyerror(YYLTYPE *yyllocp, struct data * data, yyscan_t unused, const char *msg)
 int 
 main(int argc, char **argv) 
 {
-  struct data *data;
-  data = calloc(1, sizeof(struct data));
+  // struct data *data;
+  // data = calloc(1, sizeof(struct data));
 
-  yyscan_t scanner;
-  yylex_init(&scanner);
+  // yyscan_t scanner;
+  // yylex_init(&scanner);
 
-  yyparse(data, scanner);
-  yylex_destroy(scanner);
+  // yyparse(data, scanner);
+  // yylex_destroy(scanner);
 
-  printf("data has\n"
-    "nfields: %d\n"
-    "nlines:  %d\n", data->nfields, data->nlines);
+  // printf("data has\n"
+    // "nfields: %d\n"
+    // "nlines:  %d\n", data->nfields, data->nlines);
+
+  record_T record = recordNew();
+
+  for (int i=0; i<10001; i++)
+    recordPush(record, strdup("this"));
+
+  printf("10000| %s\n", recordGet(record, 10000));
 }
