@@ -43,7 +43,7 @@ recordNew()
 int
 recordPush(record_T record, const field_T val)
 {
-  if (!record) return DF_INVALIDARG;
+  if (!(record && val)) return DF_NULLARG;
 
   if (record->nfields >= record->len) {
     record->len <<= 1;
@@ -81,3 +81,37 @@ dataframeNew()
 
   return df;
 }
+
+int
+dataframeSetHeaders(dataframe_T df, const record_T headers)
+{
+  if (!(df && headers)) return DF_NULLARG;
+  
+  df->headers = headers;
+  df->nfields = headers->nfields;
+
+  return DF_OK;
+}
+
+int
+dataframePush(dataframe_T df, const record_T record)
+{
+  int nfields = df->nfields;
+
+  if (df->headers || df->nrecords) {
+    if (nfields != record->nfields) return DF_INVRECORD;
+  } else
+    nfields = df->nfields = record->nfields;
+
+  if (df->nrecords >= df->len) {
+    df->len <<= 1;
+    record_T *records = realloc(df->records, df->len * sizeof(record_T));
+    if (!records) return DF_ENOMEM;
+    else df->records = records;
+  }
+
+  df->records[df->nrecords++] = record;
+
+  return DF_OK;
+}
+

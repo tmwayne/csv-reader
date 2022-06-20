@@ -1,6 +1,6 @@
 // 
 // -----------------------------------------------------------------------------
-// include.h
+// dataframe.h
 // -----------------------------------------------------------------------------
 //
 // Copyright (c) 2022 Tyler Wayne
@@ -24,14 +24,15 @@
 typedef char *field_T;
 
 typedef struct record {
-  int nfields;
-  int len;
+  int nfields;  // number of fields
+  int len;      // length of the fields array
   field_T *fields;
 } *record_T;
 
 typedef struct dataframe {
-  int nrecords;
-  int len;
+  int nrecords; // number of records
+  int nfields;  // number of fields in the header record or first record
+  int len;      // length of the records array
   record_T headers;
   // TODO: make this an array of arrays for increased storage efficiency
   record_T *records;
@@ -42,5 +43,7 @@ extern int          recordPush(record_T, const field_T);
 extern field_T      recordGet(record_T, const int);
 
 extern dataframe_T  dataframeNew();
+extern int          dataframeSetHeaders(dataframe_T, const record_T);
+extern int          dataframePush(dataframe_T, const record_T);
 
 #endif // DATAFRAME_INCLUDED

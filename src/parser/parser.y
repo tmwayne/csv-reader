@@ -25,10 +25,11 @@
 #include <stdlib.h> // calloc
 #include <string.h> // strncpy
 #include "parser.h"
+#include "dataframe.h"
 // #include "lexer.h"
 
 int yylex(YYSTYPE *, YYLTYPE *, yyscan_t);
-void yyerror(YYLTYPE *, struct data *, yyscan_t, const char *);
+void yyerror(YYLTYPE *, dataframe_T, yyscan_t, const char *);
 
 int nfields = 0;
 
@@ -40,14 +41,10 @@ int nfields = 0;
 
 %code requires {
   typedef void *yyscan_t;
-
-  struct data {
-    int nfields;
-    int nlines;
-  };
+  typedef struct dataframe *dataframe_T;
 }
 
-%parse-param{ struct data *data }
+%parse-param{ dataframe_T data }
 %param { yyscan_t scanner }
 
 %union {
@@ -67,11 +64,11 @@ input:
                         // add record to headers if so, otherwise add to data
                         { printf("EOL\n"); 
                           data->nfields = nfields;
-                          data->nlines++;
+                          data->nrecords++;
                           nfields = 0;}
 
   | input record EOL    { printf("EOL\n"); 
-                          data->nlines++;
+                          data->nrecords++;
                           nfields = 0; }
                         // check that field count is correct
                         // add record to outgoing data structure

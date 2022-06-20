@@ -24,8 +24,11 @@
 #define ERRORCODES_INCLUDED
 
 enum generalCodes {
-  DF_ENOMEM     = -2,
-  DF_INVALIDARG = -1,
+  DF_INVRECORD  = -5, // record has the wrong number of rows
+  DF_CORRUPT    = -4, // values in the dataframe are inconsistent
+  DF_ENOMEM     = -3, // memory allocation failed
+  DF_OOBARG     = -2, // argument is out-of-bounds
+  DF_NULLARG    = -1, // pointer argument is NULL
   DF_OK         = 0
 };
 
