@@ -25,27 +25,43 @@
 #include "errorcodes.h"
 #include "error-functions.h"
 
-void 
-yyerror(YYLTYPE *yyllocp, dataframe_T data, yyscan_t unused, const char *msg)
+void
+yyerror(const dataframe_T data, const struct scannerArgs scanner, const char *msg)
 {
-  fprintf(stderr, "[%d:%d]: %s\n",
-    yyllocp->first_line, yyllocp->first_column, msg);
+  fprintf(stderr, "Error: %s\n", msg);
+}
+
+dataframe_T
+parseDelim(FILE *file, struct scannerArgs scanner)
+{
+  // TODO: add error detection
+  
+  dataframe_T data = dataframeNew();
+
+  if (yyparse(data, scanner) == -1)
+    errExit("Failed to parse data");
+
+  return data;
 }
 
 int 
 main(int argc, char **argv) 
 {
-  dataframe_T data = dataframeNew();
+  struct scannerArgs scanner = {
+    .yyin = stdin,
+    .sep = '|',
+    .headers = 0,
+    .quotes = 1
+  };
 
-  yyscan_t scanner;
-  yylex_init(&scanner);
-
-  if (yyparse(data, scanner) == -1)
-    errExit("Failed to parse data");
-
-  yylex_destroy(scanner);
+  dataframe_T data = parseDelim(stdin, scanner);
 
   printf("data has\n"
     "nfields: %d\n"
     "nlines:  %d\n", data->nfields, data->nrecords);
+
+  // if(data->headers) {
+    // for (int i=0; i<data->nfields; i++)
+      // printf("%d| %s\n", i, data->headers->fields[i]);
+  // }
 }

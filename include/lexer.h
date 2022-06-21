@@ -1,11 +1,9 @@
 // 
 // -----------------------------------------------------------------------------
-// errorcodes.h
+// lexer.h
 // -----------------------------------------------------------------------------
 //
-// Internal error codes for Preview
-//
-// Copyright © 2021 Tyler Wayne
+// Copyright (c) 2022 Tyler Wayne
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,21 +18,17 @@
 // limitations under the License.
 //
 
-#ifndef ERRORCODES_INCLUDED
-#define ERRORCODES_INCLUDED
+#ifndef LEXER_INCLUDED
+#define LEXER_INCLUDED
 
-enum parserCodes {
-  PS_ESYNTAX    = -2, // syntax error
-  PS_ENOMEM     = -1  // memory allocation failed
+struct scannerArgs {
+  FILE *yyin;
+  char sep;
+  int headers;
+  int quotes;
 };
 
-enum generalCodes {
-  DF_INVRECORD  = -5, // record has the wrong number of rows
-  DF_CORRUPT    = -4, // values in the dataframe are inconsistent
-  DF_ENOMEM     = -3, // memory allocation failed
-  DF_OOBARG     = -2, // argument is out-of-bounds
-  DF_NULLARG    = -1, // pointer argument is NULL
-  DF_OK         = 0
-};
+extern int  yylex(YYSTYPE *, struct scannerArgs);
+extern void yyerror(const dataframe_T, const struct scannerArgs, const char *);
 
-#endif // ERRORCODES_INCLUDED
+#endif // LEXER_INCLUDED

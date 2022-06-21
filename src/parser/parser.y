@@ -25,12 +25,9 @@
 #include <stdlib.h> // calloc
 #include <string.h> // strncpy
 #include "parser.h"
+#include "lexer.h"
 #include "dataframe.h"
 #include "errorcodes.h"
-// #include "lexer.h"
-
-int yylex(YYSTYPE *, YYLTYPE *, yyscan_t);
-void yyerror(YYLTYPE *, dataframe_T, yyscan_t, const char *);
 
 int nfields = 0;
 record_T record;
@@ -39,30 +36,35 @@ record_T record;
 
 // %define parse.trace
 %define api.pure full 
-%locations
+// %locations
 
 %code requires {
-  typedef void *yyscan_t;
+  // typedef void *yyscan_t;
   typedef struct dataframe *dataframe_T;
+  typedef struct scannerArgs scanner_T;
 }
 
 %parse-param{ dataframe_T data }
-%param { yyscan_t scanner }
+%param{ scanner_T scanner }
+// %param { yyscan_t scanner }
 
 %union {
   char *str;
+  char c;
 }
 
 %token <str> FIELD
-%token EOL
+%token <c> SEP EOL
 
 %type <str> field
 
 %%
 
 input:
-                        // TODO: check for a header flag
-  record EOL            { dataframeSetHeaders(data, record);
+  record EOL            { if (scanner.headers) 
+                            dataframeSetHeaders(data, record);
+                          else
+                            dataframePush(data, record);
                           record = NULL; }
 
                         // TODO: figure out the best way to handle errors
@@ -77,7 +79,7 @@ record:
   field                 { if (!record) record = recordNew();
                           recordPush(record, strdup($1)); }
 
-  | record ',' field    { recordPush(record, strdup($3)); }
+  | record SEP field    { recordPush(record, strdup($3)); }
   ;
 
 field:
