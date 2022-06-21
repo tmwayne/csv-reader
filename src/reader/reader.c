@@ -50,7 +50,7 @@ main(int argc, char **argv)
   struct scannerArgs scanner = {
     .yyin = stdin,
     .sep = '|',
-    .headers = 0,
+    .headers = 1,
     .quotes = 1
   };
 
@@ -60,8 +60,8 @@ main(int argc, char **argv)
     "nfields: %d\n"
     "nlines:  %d\n", data->nfields, data->nrecords);
 
-  // if(data->headers) {
-    // for (int i=0; i<data->nfields; i++)
-      // printf("%d| %s\n", i, data->headers->fields[i]);
-  // }
+  if(data->headers) {
+    for (int i=0; i<data->nfields; i++)
+      printf("%d| %s\n", i, data->headers->fields[i]);
+  }
 }

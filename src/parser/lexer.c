@@ -21,6 +21,7 @@
 #include <stdio.h>  // 
 #include <stdlib.h> // calloc, realloc
 #include <string.h> // getchar, ungetc
+#include <ctype.h> // isspace
 #include "parser.h"
 #include "lexer.h"
 #include "errorcodes.h" 
@@ -40,6 +41,10 @@ yylex(YYSTYPE *yylvalp, struct scannerArgs yyscanner)
       if (!inquote) {
         if (i) {
           ungetc(c, yyscanner.yyin);
+          
+          // Remove unquoted trailing whitespace
+          for ( ; i && !isspace(buf[i-1]) ; i--) ;
+          buf[i] = '\0';
           yylvalp->str = buf;
           return FIELD;
         }
@@ -50,7 +55,7 @@ yylex(YYSTYPE *yylvalp, struct scannerArgs yyscanner)
     }
 
     // Rules for quoting from 
-    // en.wikipedia.org/wiki/Comma-separated_values#General_functionality
+    // creativyst.com/Doc/Articles/CSV/CSV01.shtml
     // - fields will be quoted that contain a separator, newline, or quote
     // - a quote in a field needs to be quote-escaped
     // TODO: allow quote to be escaped with a backslash
@@ -61,8 +66,9 @@ yylex(YYSTYPE *yylvalp, struct scannerArgs yyscanner)
         // Encountering second quote and next character is a
         // separator or new-line, then we are done
         if (c == yyscanner.sep || c == '\n') {
-          yylvalp->str = buf;
           ungetc(c, yyscanner.yyin);
+          buf[i] = '\0';
+          yylvalp->str = buf;
           return FIELD;
 
         // Encountering second quote and next character is a
@@ -82,6 +88,9 @@ yylex(YYSTYPE *yylvalp, struct scannerArgs yyscanner)
         continue;
       }
     }
+
+    // Remove unquoted leading whitespace
+    if (isspace(c) && !inquote && i==0) continue;
 
     // Field (default)
     if (i >= len - 1) {
