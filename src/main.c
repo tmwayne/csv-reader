@@ -18,7 +18,8 @@
 // limitations under the License.
 //
 
-#include <stdio.h>        // printf
+#include <stdio.h>        // fopen, printf, perror
+#include <stdlib.h>       // exit, EXIT_FAILURE
 #include "delim-reader.h" // parseDelim
 #include "dataframe.h"    // dataframe_T, dataframeFree
 
@@ -26,9 +27,18 @@ int
 main(int argc, char **argv) 
 {
   // yydebug = 1;
-
+  FILE *file;
+  
+  if (argc == 2) {
+    file = fopen(argv[1], "r");
+    if (!file) {
+      perror("fopen");
+      exit(EXIT_FAILURE);
+    }
+  } else file = stdin;
+      
   dataframe_T data = parseDelim(
-    stdin,  // file
+    file,   // file
     ',',    // sep
     1,      // headers
     1       // quotes
