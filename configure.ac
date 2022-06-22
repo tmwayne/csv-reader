@@ -7,14 +7,14 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT([csv-reader], [0.1], [tylerwayne3@gmail.com])
+AC_INIT([delim-reader], [0.1], [tylerwayne3@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 
 LT_PREREQ([2.2.])
 LT_INIT([dlopen])
 
 AC_CONFIG_MACRO_DIRS([m4])
-AC_CONFIG_SRCDIR([src/reader/reader.c])
+AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -39,8 +39,7 @@ AC_CONFIG_FILES([
   include/Makefile
   src/Makefile
   src/common/Makefile
-  src/parser/Makefile
-  src/reader/Makefile
+  src/delim-reader/Makefile
   test/Makefile
   test/data/Makefile
   test/unit/Makefile

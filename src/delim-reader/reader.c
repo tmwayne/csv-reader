@@ -18,36 +18,9 @@
 // limitations under the License.
 //
 
-#include <stdio.h>
-#include "parser.h"
-#include "lexer.h"
-#include "dataframe.h"
-#include "errorcodes.h"
-#include "error-functions.h"
-
-void
-yyerror(const dataframe_T data, const struct scannerArgs scanner, const char *msg)
-{
-  fprintf(stderr, "Error: %s\n", msg);
-}
-
-dataframe_T
-parseDelim(FILE *file, char sep, int headers, int quotes)
-{
-  struct scannerArgs scanner = {
-    .yyin     = file,
-    .sep      = sep,
-    .headers  = headers,
-    .quotes   = quotes
-  };
-  
-  dataframe_T data = dataframeNew();
-
-  if (yyparse(data, scanner) == -1)
-    errExit("Failed to parse data");
-
-  return data;
-}
+#include <stdio.h>     // printf
+#include "reader.h"    // parseDelim
+#include "dataframe.h" // dataframe_T, dataframeFree
 
 int 
 main(int argc, char **argv) 
