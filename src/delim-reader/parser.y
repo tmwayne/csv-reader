@@ -25,7 +25,7 @@
 #include <stdlib.h> // calloc
 #include <string.h> // strncpy
 #include "parser.h"
-#include "lexer.h"
+#include "delim-reader.h"
 #include "dataframe.h"
 #include "errorcodes.h"
 

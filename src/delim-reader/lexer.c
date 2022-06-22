@@ -23,7 +23,7 @@
 #include <string.h> // getchar, ungetc
 #include <ctype.h> // isspace
 #include "parser.h"
-#include "lexer.h"
+#include "delim-reader.h"
 #include "errorcodes.h" 
 
 int 

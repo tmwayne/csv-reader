@@ -20,7 +20,7 @@
 
 #include <stdio.h>           // FILE
 #include "parser.h"          // yyparse
-#include "reader.h"          // scannerArgs
+#include "delim-reader.h"    // scannerArgs
 #include "dataframe.h"       // dataframe_T, dataframeNew
 #include "errorcodes.h"
 

@@ -18,9 +18,9 @@
 // limitations under the License.
 //
 
-#include <stdio.h>     // printf
-#include "reader.h"    // parseDelim
-#include "dataframe.h" // dataframe_T, dataframeFree
+#include <stdio.h>        // printf
+#include "delim-reader.h" // parseDelim
+#include "dataframe.h"    // dataframe_T, dataframeFree
 
 int 
 main(int argc, char **argv) 
