@@ -32,9 +32,14 @@ yyerror(const dataframe_T data, const struct scannerArgs scanner, const char *ms
 }
 
 dataframe_T
-parseDelim(FILE *file, struct scannerArgs scanner)
+parseDelim(FILE *file, char sep, int headers, int quotes)
 {
-  // TODO: add error detection
+  struct scannerArgs scanner = {
+    .yyin     = file,
+    .sep      = sep,
+    .headers  = headers,
+    .quotes   = quotes
+  };
   
   dataframe_T data = dataframeNew();
 
@@ -47,14 +52,14 @@ parseDelim(FILE *file, struct scannerArgs scanner)
 int 
 main(int argc, char **argv) 
 {
-  struct scannerArgs scanner = {
-    .yyin = stdin,
-    .sep = '|',
-    .headers = 1,
-    .quotes = 1
-  };
+  // yydebug = 1;
 
-  dataframe_T data = parseDelim(stdin, scanner);
+  dataframe_T data = parseDelim(
+    stdin,  // file
+    ',',    // sep
+    1,      // headers
+    1       // quotes
+  );
 
   printf("data has\n"
     "nfields: %d\n"
@@ -64,4 +69,6 @@ main(int argc, char **argv)
     for (int i=0; i<data->nfields; i++)
       printf("%d| %s\n", i, data->headers->fields[i]);
   }
+
+  dataframeFree(&data);
 }

@@ -31,10 +31,11 @@
 
 int nfields = 0;
 record_T record;
+char *val;
 
 %}
 
-// %define parse.trace
+%define parse.trace
 %define api.pure full 
 // %locations
 
@@ -77,9 +78,10 @@ input:
 
 record:
   field                 { if (!record) record = recordNew();
-                          recordPush(record, strdup($1)); }
+                          recordPush(record, $1); }
+                          
 
-  | record SEP field    { recordPush(record, strdup($3)); }
+  | record SEP field    { recordPush(record, $3); }
   ;
 
 field:

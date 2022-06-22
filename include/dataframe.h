@@ -40,10 +40,12 @@ typedef struct dataframe {
 
 extern record_T     recordNew();
 extern int          recordPush(record_T, const field_T);
-extern field_T      recordGet(record_T, const int);
+extern field_T      recordGet(const record_T, const int);
+extern void         recordFree(record_T *);
 
 extern dataframe_T  dataframeNew();
 extern int          dataframeSetHeaders(dataframe_T, const record_T);
 extern int          dataframePush(dataframe_T, const record_T);
+extern void         dataframeFree(dataframe_T *);
 
 #endif // DATAFRAME_INCLUDED

@@ -18,8 +18,8 @@
 // limitations under the License.
 //
 
-#include <stdio.h>
 #include <stdlib.h> // calloc, realloc
+#include <string.h> // strdup
 #include "dataframe.h"
 #include "errorcodes.h"
 
@@ -52,17 +52,29 @@ recordPush(record_T record, const field_T val)
     else record->fields = fields;
   }
 
-  record->fields[record->nfields++] = val;
+  record->fields[record->nfields++] = strdup(val);
 
   return DF_OK;
 }
 
 field_T
-recordGet(record_T record, const int ind)
+recordGet(const record_T record, const int ind)
 {
   if (!(record && ind < record->nfields)) return NULL;
   return record->fields[ind];
 }
+
+void
+recordFree(record_T *record)
+{
+  if (!(record && *record)) return;
+  for (int i=0; i < (*record)->nfields; i++)
+    free((*record)->fields[i]);
+
+  free(*record);
+  *record = NULL;
+}
+
 
 dataframe_T
 dataframeNew()
@@ -115,3 +127,16 @@ dataframePush(dataframe_T df, const record_T record)
   return DF_OK;
 }
 
+void
+dataframeFree(dataframe_T *df)
+{
+  if (!(df && *df)) return;
+  
+  if ((*df)->headers) recordFree(&(*df)->headers);
+
+  for (int i=0; i < (*df)->nrecords; i++)
+    recordFree(&(*df)->records[i]);
+
+  free(*df);
+  *df = NULL;
+}

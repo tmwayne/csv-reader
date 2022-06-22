@@ -43,7 +43,7 @@ yylex(YYSTYPE *yylvalp, struct scannerArgs yyscanner)
           ungetc(c, yyscanner.yyin);
           
           // Remove unquoted trailing whitespace
-          for ( ; i && !isspace(buf[i-1]) ; i--) ;
+          for ( ; i && isspace(buf[i-1]) ; i--) ;
           buf[i] = '\0';
           yylvalp->str = buf;
           return FIELD;
