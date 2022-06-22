@@ -1,6 +1,6 @@
 //
 // -----------------------------------------------------------------------------
-// main.c
+// reader.c
 // -----------------------------------------------------------------------------
 //
 // Copyright (c) 2022 Tyler Wayne
@@ -18,30 +18,32 @@
 // limitations under the License.
 //
 
-#include <stdio.h>     // printf
-#include "reader.h"    // parseDelim
-#include "dataframe.h" // dataframe_T, dataframeFree
+#include <stdio.h>           // FILE
+#include "parser.h"          // yyparse
+#include "reader.h"          // scannerArgs
+#include "dataframe.h"       // dataframe_T, dataframeNew
+#include "errorcodes.h"
 
-int 
-main(int argc, char **argv) 
+void
+yyerror(const dataframe_T data, const struct scannerArgs scanner, const char *msg)
 {
-  // yydebug = 1;
+  fprintf(stderr, "Error: %s\n", msg);
+}
 
-  dataframe_T data = parseDelim(
-    stdin,  // file
-    ',',    // sep
-    1,      // headers
-    1       // quotes
-  );
+dataframe_T
+parseDelim(FILE *file, char sep, int headers, int quotes)
+{
+  struct scannerArgs scanner = {
+    .yyin     = file,
+    .sep      = sep,
+    .headers  = headers,
+    .quotes   = quotes
+  };
+  
+  dataframe_T data = dataframeNew();
 
-  printf("data has\n"
-    "nfields: %d\n"
-    "nlines:  %d\n", data->nfields, data->nrecords);
+  if (yyparse(data, scanner) == -1)
+    return NULL;
 
-  if(data->headers) {
-    for (int i=0; i<data->nfields; i++)
-      printf("%d| %s\n", i, data->headers->fields[i]);
-  }
-
-  dataframeFree(&data);
+  return data;
 }
